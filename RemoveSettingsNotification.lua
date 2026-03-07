@@ -1,16 +1,13 @@
 local addon = CreateFrame("Frame")
 
 function addon:RemoveNewSettingsNotification()
-	local currentNewSettings = NewSettings[GetBuildInfo()]
-	if not currentNewSettings then
-		return
-	end
-
-	for _, newSetting in ipairs(currentNewSettings) do
-		if not NewSettingsSeen[newSetting] then
-			-- Set variable securely via this util, other functions exist to do the same
-			-- insecurely it will taint action bars and more so don't do that
-			TableUtil.TrySet(NewSettingsSeen, newSetting)
+	-- Clear new settings from all versions, not just the current build,
+	-- so badges are removed even for prior patch entries
+	for version, settings in pairs(NewSettings) do
+		for _, newSetting in ipairs(settings) do
+			if not NewSettingsSeen[newSetting] then
+				TableUtil.TrySet(NewSettingsSeen, newSetting)
+			end
 		end
 	end
 end
