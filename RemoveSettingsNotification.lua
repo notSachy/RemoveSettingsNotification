@@ -1,27 +1,42 @@
 local addon = CreateFrame("Frame")
 
 function addon:RemoveNewSettingsNotification()
-	local currentNewSettings = NewSettings[GetBuildInfo()]
-	if not currentNewSettings then
-		return
-	end
-
-	for _, newSetting in ipairs(currentNewSettings) do
-		if not NewSettingsSeen[newSetting] then
-			-- Set variable securely via this util, other functions exist to do the same
-			-- insecurely it will taint action bars and more so don't do that
-			TableUtil.TrySet(NewSettingsSeen, newSetting)
+	-- Clear new settings from all versions, not just the current build,
+	-- so badges are removed even for prior patch entries
+	for version, settings in pairs(NewSettings) do
+		for _, newSetting in ipairs(settings) do
+			if not NewSettingsSeen[newSetting] then
+				TableUtil.TrySet(NewSettingsSeen, newSetting)
+			end
 		end
 	end
 end
 
-function addon:OnEvent(e, ...)
-  self:RemoveNewSettingsNotification()
+function addon:HookCategoryNewBadges()
+	-- The category sidebar "NEW" badges are rendered by
+	-- SettingsCategoryListButtonMixin:RefreshNewFeature which checks
+	-- initializer:IsNewTagShown() per-setting. Hook it to always hide.
+	if not SettingsCategoryListButtonMixin then return end
+	hooksecurefunc(SettingsCategoryListButtonMixin, "RefreshNewFeature", function(button)
+		button.NewFeature:SetShown(false)
+	end)
+	self.hookedCategoryBadges = true
+end
+
+function addon:OnEvent(e, arg1)
+	if e == "PLAYER_LOGIN" then
+		self:RemoveNewSettingsNotification()
+		self:HookCategoryNewBadges()
+	elseif e == "ADDON_LOADED" and not self.hookedCategoryBadges then
+		-- Settings addon may load on demand after PLAYER_LOGIN
+		self:HookCategoryNewBadges()
+	end
 end
 
 function addon:OnLoad()
-  self:SetScript("OnEvent", self.OnEvent)
-  self:RegisterEvent("PLAYER_LOGIN")
+	self:SetScript("OnEvent", self.OnEvent)
+	self:RegisterEvent("PLAYER_LOGIN")
+	self:RegisterEvent("ADDON_LOADED")
 end
 
 addon:OnLoad()
