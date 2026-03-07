@@ -1,0 +1,7 @@
+## Interface: 110200, 110205, 110207
+## Title: |cffEEE4AERemove Settings Notification|r
+## Notes: |cff58C6FARemoves the notifications on the microbar for new settings after a patch|r
+## Author: Yuyuli
+## Version: 1
+
+RemoveSettingsNotification.lua
