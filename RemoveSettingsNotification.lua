@@ -12,13 +12,31 @@ function addon:RemoveNewSettingsNotification()
 	end
 end
 
-function addon:OnEvent(e, ...)
-  self:RemoveNewSettingsNotification()
+function addon:HookCategoryNewBadges()
+	-- The category sidebar "NEW" badges are rendered by
+	-- SettingsCategoryListButtonMixin:RefreshNewFeature which checks
+	-- initializer:IsNewTagShown() per-setting. Hook it to always hide.
+	if not SettingsCategoryListButtonMixin then return end
+	hooksecurefunc(SettingsCategoryListButtonMixin, "RefreshNewFeature", function(button)
+		button.NewFeature:SetShown(false)
+	end)
+	self.hookedCategoryBadges = true
+end
+
+function addon:OnEvent(e, arg1)
+	if e == "PLAYER_LOGIN" then
+		self:RemoveNewSettingsNotification()
+		self:HookCategoryNewBadges()
+	elseif e == "ADDON_LOADED" and not self.hookedCategoryBadges then
+		-- Settings addon may load on demand after PLAYER_LOGIN
+		self:HookCategoryNewBadges()
+	end
 end
 
 function addon:OnLoad()
-  self:SetScript("OnEvent", self.OnEvent)
-  self:RegisterEvent("PLAYER_LOGIN")
+	self:SetScript("OnEvent", self.OnEvent)
+	self:RegisterEvent("PLAYER_LOGIN")
+	self:RegisterEvent("ADDON_LOADED")
 end
 
 addon:OnLoad()
