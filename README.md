@@ -1,0 +1,1 @@
+# settings-new-badge-remover
