@@ -10,6 +10,10 @@ function addon:RemoveNewSettingsNotification()
 		end
 	end
 
+	-- Override the check function to always return false.
+	-- This is safe because it's only called from Settings UI code (not secure frames),
+	-- and avoids modifying the NewSettings table which would taint GameMenuFrame.
+	IsNewSettingInCurrentVersion = function() return false end
 end
 
 function addon:HookCategoryNewBadges()
