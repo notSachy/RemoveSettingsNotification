@@ -1,8 +1,7 @@
 local addon = CreateFrame("Frame")
 
 function addon:RemoveNewSettingsNotification()
-	-- Clear new settings from all versions, not just the current build,
-	-- so badges are removed even for prior patch entries
+	-- Mark all settings as seen across all versions
 	for version, settings in pairs(NewSettings) do
 		for _, newSetting in ipairs(settings) do
 			if not NewSettingsSeen[newSetting] then
@@ -10,16 +9,21 @@ function addon:RemoveNewSettingsNotification()
 			end
 		end
 	end
+
+	-- Wipe the NewSettings table so IsNewSettingInCurrentVersion()
+	-- returns false for everything. This kills NEW tags at all levels:
+	-- category sidebar badges, section headers, and individual controls.
+	wipe(NewSettings)
 end
 
 function addon:HookCategoryNewBadges()
-	-- The category sidebar "NEW" badges are rendered by
-	-- SettingsCategoryListButtonMixin:RefreshNewFeature which checks
-	-- initializer:IsNewTagShown() per-setting. Hook it to always hide.
 	if not SettingsCategoryListButtonMixin then return end
+
+	-- Force-hide category sidebar NEW badges
 	hooksecurefunc(SettingsCategoryListButtonMixin, "RefreshNewFeature", function(button)
 		button.NewFeature:SetShown(false)
 	end)
+
 	self.hookedCategoryBadges = true
 end
 
