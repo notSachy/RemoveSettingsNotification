@@ -10,10 +10,12 @@ function addon:RemoveNewSettingsNotification()
 		end
 	end
 
-	-- Wipe the NewSettings table so IsNewSettingInCurrentVersion()
-	-- returns false for everything. This kills NEW tags at all levels:
-	-- category sidebar badges, section headers, and individual controls.
-	wipe(NewSettings)
+	-- Clear each version's list in-place so IsNewSettingInCurrentVersion()
+	-- returns false, without wiping the top-level table (which would taint
+	-- the secure GameMenuFrame notification-pip check).
+	for version, settings in pairs(NewSettings) do
+		wipe(settings)
+	end
 end
 
 function addon:HookCategoryNewBadges()
