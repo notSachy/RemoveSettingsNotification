@@ -10,12 +10,6 @@ function addon:RemoveNewSettingsNotification()
 		end
 	end
 
-	-- Clear each version's list in-place so IsNewSettingInCurrentVersion()
-	-- returns false, without wiping the top-level table (which would taint
-	-- the secure GameMenuFrame notification-pip check).
-	for version, settings in pairs(NewSettings) do
-		wipe(settings)
-	end
 end
 
 function addon:HookCategoryNewBadges()
