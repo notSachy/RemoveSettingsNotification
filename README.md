@@ -13,9 +13,8 @@ Removes the blue "NEW" labels that appear throughout the Settings UI when Blizza
 
 ## How it works
 
-1. Marks all entries in `NewSettingsSeen` as viewed
-2. Wipes the `NewSettings` table so `IsNewSettingInCurrentVersion()` returns false for everything
-3. Hooks `SettingsCategoryListButtonMixin:RefreshNewFeature` to force-hide sidebar badges
+1. Marks all entries in `NewSettingsSeen` as viewed so `IsNewSettingInCurrentVersion()` treats them as seen
+2. Hooks `SettingsCategoryListButtonMixin:RefreshNewFeature` to force-hide sidebar badges
 
 ## Installation
 
