@@ -4,7 +4,7 @@ A World of Warcraft addon that removes all "NEW" badges/tags from the Settings p
 
 ## What it does
 
-Removes the yellow "NEW" labels that appear throughout the Settings UI when Blizzard adds new options in a patch:
+Removes the blue "NEW" labels that appear throughout the Settings UI when Blizzard adds new options in a patch:
 
 - **Category sidebar badges** — the "NEW" labels next to category names like "Gameplay Enhancements"
 - **Section header tags** — the "NEW" tags on section headers like "External Defensives", "Boss Warnings", "Nameplates"
