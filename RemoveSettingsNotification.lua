@@ -1,9 +1,18 @@
 local addon = CreateFrame("Frame")
 
 function addon:RemoveNewSettingsNotification()
+	-- Mark all settings as seen across all versions
+	for version, settings in pairs(NewSettings) do
+		for _, newSetting in ipairs(settings) do
+			if not NewSettingsSeen[newSetting] then
+				TableUtil.TrySet(NewSettingsSeen, newSetting)
+			end
+		end
+	end
+
 	-- Override the check function to always return false.
-	-- We intentionally avoid modifying NewSettings/NewSettingsSeen tables
-	-- because that taints the secure GameMenuFrame execution path.
+	-- This is safe because it's only called from Settings UI code (not secure frames),
+	-- and avoids modifying the NewSettings table which would taint GameMenuFrame.
 	IsNewSettingInCurrentVersion = function() return false end
 end
 
