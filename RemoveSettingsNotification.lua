@@ -1,7 +1,6 @@
 local addon = CreateFrame("Frame")
 
 function addon:RemoveNewSettingsNotification()
-	-- Mark all settings as seen across all versions
 	for version, settings in pairs(NewSettings) do
 		for _, newSetting in ipairs(settings) do
 			if not NewSettingsSeen[newSetting] then
@@ -9,17 +8,12 @@ function addon:RemoveNewSettingsNotification()
 			end
 		end
 	end
-
-	-- Override the check function to always return false.
-	-- This is safe because it's only called from Settings UI code (not secure frames),
-	-- and avoids modifying the NewSettings table which would taint GameMenuFrame.
+	-- Override the check function to always return false. Safe in 12.0.1, not a secured frame, no taint issues.
 	IsNewSettingInCurrentVersion = function() return false end
 end
 
-function addon:HookCategoryNewBadges()
+function addon:HookCategoryNewBadges() -- for the stupid fucking new 'new' badges they added INSIDE subcategories...
 	if not SettingsCategoryListButtonMixin then return end
-
-	-- Force-hide category sidebar NEW badges
 	hooksecurefunc(SettingsCategoryListButtonMixin, "RefreshNewFeature", function(button)
 		button.NewFeature:SetShown(false)
 	end)
@@ -32,7 +26,6 @@ function addon:OnEvent(e, arg1)
 		self:RemoveNewSettingsNotification()
 		self:HookCategoryNewBadges()
 	elseif e == "ADDON_LOADED" and not self.hookedCategoryBadges then
-		-- Settings addon may load on demand after PLAYER_LOGIN
 		self:HookCategoryNewBadges()
 	end
 end
@@ -44,3 +37,4 @@ function addon:OnLoad()
 end
 
 addon:OnLoad()
+
